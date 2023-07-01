@@ -1,0 +1,28 @@
+services:
+  webserver:
+    image: webserver:2
+    container_name: webserver.karateca
+    build:
+      context: ./docker/webserver
+    ports:
+      - "5001:80"
+    volumes:
+      - "./public:/var/www/html/public"
+  php:
+    image: php_server:2
+    container_name: php.karateca
+    build:
+      dockerfile: docker/php/Dockerfile
+      context: .
+    volumes:
+      - ".:/var/www/html"
+      - "server_logs:/var/www/data/logs"
+      - "server_cache:/var/www/data/cache"
+      - "./docker/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
+      - /var/www/html/vendor
+    environment:
+      APP_LOG_DIR: /var/www/data/log
+      APP_CACHE_DIR: /var/www/data/cache
+volumes:
+  server_cache:
+  server_logs:
