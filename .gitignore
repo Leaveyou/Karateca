@@ -2,4 +2,6 @@
 ###> phpunit/phpunit ###
 /phpunit.xml
 .phpunit.result.cache
+vendor
+var
 ###< phpunit/phpunit ###
