@@ -2,7 +2,7 @@
 
 namespace App\Domain;
 
-use App\Domain\Exception\PartyDoesNotExit;
+use App\Domain\Exception\PartyDoesNotExist;
 
 class RuntimePartyStorage implements PartyStorage
 {
@@ -36,6 +36,6 @@ class RuntimePartyStorage implements PartyStorage
     private function ensurePartyExists(GUID $partyId): void
     {
         if (!isset($this->parties[(string)$partyId]))
-            throw new PartyDoesNotExit("The requested party does not exist.");
+            throw new PartyDoesNotExist("The requested party does not exist.");
     }
 }

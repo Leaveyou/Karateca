@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit;
 use App\Domain\ApplicationUser;
-use App\Domain\Exception\PartyDoesNotExit;
+use App\Domain\Exception\PartyDoesNotExist;
 use App\Domain\Exception\UserDoesNotHostParty;
 use App\Domain\Party;
 use App\Domain\RuntimePartyStorage;
@@ -57,7 +57,7 @@ class ApplicationTest extends MockeryTestCase
 
         $george->deleteParty($partyOfGeorge->getId());
 
-        $this->expectException(PartyDoesNotExit::class);
+        $this->expectException(PartyDoesNotExist::class);
         $partyCollection->getParty($partyOfGeorge->getId());
 
         $partyList = $partyCollection->listParties();

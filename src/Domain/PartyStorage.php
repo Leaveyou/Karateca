@@ -2,7 +2,7 @@
 
 namespace App\Domain;
 
-use App\Domain\Exception\PartyDoesNotExit;
+use App\Domain\Exception\PartyDoesNotExist;
 use App\Domain\Exception\UserDoesNotHostParty;
 
 interface PartyStorage
@@ -12,9 +12,9 @@ interface PartyStorage
 
     public function addParty(Party $party): self;
 
-    /** @throws PartyDoesNotExit */
+    /** @throws PartyDoesNotExist */
     public function getParty(GUID $partyId): Party;
 
-    /** @throws PartyDoesNotExit|UserDoesNotHostParty */
+    /** @throws PartyDoesNotExist|UserDoesNotHostParty */
     public function deleteParty(GUID $partyId): void;
 }

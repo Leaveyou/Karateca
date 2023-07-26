@@ -4,4 +4,4 @@ namespace App\Domain\Exception;
 
 use DomainException;
 
-class PartyDoesNotExit extends DomainException {}
+class PartyDoesNotExist extends DomainException {}
