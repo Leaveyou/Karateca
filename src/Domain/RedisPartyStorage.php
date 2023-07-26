@@ -19,7 +19,7 @@ class RedisPartyStorage implements PartyStorage
         
         $this->redis->multi(Redis::PIPELINE);
         foreach ($parties as $partyId){
-            $this->redis->hGetAll($this->generatePartySettingsKey($partyId));
+            $this->redis->hGetAll($this->partySettingsIndexKey($partyId));
         }
         $response = $this->redis->exec();
 
@@ -38,7 +38,7 @@ class RedisPartyStorage implements PartyStorage
         $this->redis->multi(Redis::PIPELINE);
         {
             $this->redis->zAdd("PARTIES", time(), $partyId);
-            $this->redis->hMSet($this->generatePartySettingsKey($partyId), [
+            $this->redis->hMSet($this->partySettingsIndexKey($partyId), [
                 "id" => $partyId,
                 "host" => $party->getHost(),
             ]);
@@ -58,7 +58,7 @@ class RedisPartyStorage implements PartyStorage
         // TODO: Implement deleteParty() method.
     }
 
-    private function generatePartySettingsKey(string $partyId): string
+    private function partySettingsIndexKey(string $partyId): string
     {
         return "PARTY-SETTINGS_" . $partyId;
     }

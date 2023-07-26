@@ -19,15 +19,9 @@ class DefaultController extends AbstractController
      */
     public function index(RouterInterface $router, RedisPartyStorage $redis, ApplicationUser $user): Response
     {
-        $googleCallback = $router->generate("google_oauth", [], UrlGeneratorInterface::ABSOLUTE_URL );
-
-
-        // $user->throwParty();
-
         $parties = $redis->listParties();
 
         return $this->render("index.html.twig", [
-            'googleCallback' => $googleCallback,
             'parties' => $parties,
         ]);
     }

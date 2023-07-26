@@ -19,6 +19,12 @@
             <li><a href="{{ path('google_oauth') }}">Login with Google</a></li>
         </ul>
 
+        <ul>
+            <li><a href="{{ path('redis_keys') }}">List all keys</a></li>
+            <li><a href="{{ path('redis_add_party') }}">Add random party</a></li>
+            <li><a href="{{ path('redis_clear_all') }}">Clear Redis</a></li>
+        </ul>
+
         {% block body %}{% endblock %}
     </body>
 </html>

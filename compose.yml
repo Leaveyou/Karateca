@@ -8,12 +8,19 @@ services:
       - "5001:80"
     volumes:
       - "./public:/var/www/html/public"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - karateca-bridge
+
   php:
     container_name: php.karateca
     image: php_server:latest
     build:
       dockerfile: docker/php/Dockerfile
       context: .
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ".:/var/www/html"
       - "server_logs:/var/www/var/logs"
@@ -24,21 +31,35 @@ services:
     environment:
       APP_LOG_DIR: /var/www/data/log
       APP_CACHE_DIR: /var/www/data/cache
+    networks:
+      - karateca-bridge
+
   redis:
     image: redis:latest
     container_name: redis.karateca
     command: [sh, -c, "rm -f /data/dump.rdb && redis-server /redis.conf --save '' --appendonly no"]
     volumes:
       - "./docker/redis/redis.conf:/redis.conf"
+    networks:
+      - karateca-bridge
+
   composer_update:
     volumes:
       - ".:/var/www/html"
     working_dir: "/var/www/html"
     image: composer:latest
     container_name: composer.karateca
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     profiles:
       - scripts
     command: "composer update --ignore-platform-reqs --no-scripts"
+    networks:
+      - karateca-bridge
+
 volumes:
   server_cache:
   server_logs:
+networks:
+  karateca-bridge:
+    name: karateca-bridge

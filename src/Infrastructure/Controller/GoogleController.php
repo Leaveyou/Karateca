@@ -22,7 +22,7 @@ class GoogleController extends AbstractController
         return $clientRegistry
             ->getClient('google')
             ->redirect([
-                'https://www.googleapis.com/auth/youtube'
+
             ]);
     }
 

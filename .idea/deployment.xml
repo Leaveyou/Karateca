@@ -10,7 +10,6 @@
           </mappings>
           <excludedPaths>
             <excludedPath path="/var" />
-            <excludedPath path="/vendor" />
           </excludedPaths>
         </serverdata>
       </paths>
