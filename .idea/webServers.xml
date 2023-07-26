@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="edca7e2c-af56-4d30-95ed-0b55c9385455" name="Karateka" url="https://karateca.liviugelea.ro">
+        <fileTransfer rootFolder="/var/www/Karateca" accessType="SFTP" host="webscythe" port="22" sshConfigId="4b99a451-ecdb-4ee5-bd14-6a1fb0fd6398" sshConfig="liviu@webscythe:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions controlEncoding="UTF-8" dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

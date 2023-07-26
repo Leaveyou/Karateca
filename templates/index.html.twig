@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Test</h1>
+
+    {{googleCallback}}
+
+    <ul>
+        {% for party in parties %}
+            <li>{{party.id}}
+            {{ dump(party) }}
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

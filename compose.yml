@@ -1,6 +1,6 @@
 services:
   webserver:
-    image: webserver:2
+    image: webserver:3
     container_name: webserver.karateca
     build:
       context: ./docker/webserver
@@ -9,20 +9,36 @@ services:
     volumes:
       - "./public:/var/www/html/public"
   php:
-    image: php_server:2
     container_name: php.karateca
+    image: php_server:latest
     build:
       dockerfile: docker/php/Dockerfile
       context: .
     volumes:
       - ".:/var/www/html"
-      - "server_logs:/var/www/data/logs"
-      - "server_cache:/var/www/data/cache"
+      - "server_logs:/var/www/var/logs"
+      - "server_cache:/var/www/var/cache"
       - "./docker/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
-      - /var/www/html/vendor
+      - "./docker/php/conf.d/php_redis.ini:/usr/local/etc/php/conf.d/docker-php-ext-redis.ini"
+      - "./docker/webserver/webserver-fpm.conf:/etc/nginx/conf.d/default.conf"
     environment:
       APP_LOG_DIR: /var/www/data/log
       APP_CACHE_DIR: /var/www/data/cache
+  redis:
+    image: redis:latest
+    container_name: redis.karateca
+    command: [sh, -c, "rm -f /data/dump.rdb && redis-server /redis.conf --save '' --appendonly no"]
+    volumes:
+      - "./docker/redis/redis.conf:/redis.conf"
+  composer_update:
+    volumes:
+      - ".:/var/www/html"
+    working_dir: "/var/www/html"
+    image: composer:latest
+    container_name: composer.karateca
+    profiles:
+      - scripts
+    command: "composer update --ignore-platform-reqs --no-scripts"
 volumes:
   server_cache:
   server_logs:

@@ -8,12 +8,17 @@
         {% block stylesheets %}
             {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
-
         {% block javascripts %}
             {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
+
     </head>
     <body>
+        <ul>
+            <li><a href="{{ path('homepage') }}">Home</a></li>
+            <li><a href="{{ path('google_oauth') }}">Login with Google</a></li>
+        </ul>
+
         {% block body %}{% endblock %}
     </body>
 </html>
