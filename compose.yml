@@ -57,6 +57,13 @@ services:
     networks:
       - karateca-bridge
 
+  cache_clear:
+    extends: php
+    command: "php bin/console cache:clear"
+    container_name: symfony.cache_clear
+    profiles:
+      - scripts
+
 volumes:
   server_cache:
   server_logs:
