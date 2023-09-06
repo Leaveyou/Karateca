@@ -1,24 +1,49 @@
-# Application template
+# Karateca
 
-## Features
+## Installation
 
-* [Clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) structure
-* Symfony 5
-* docker-compose configuration with separate fpm container
-* Performance improvements for dev: separate cache and logs volumes, vendor folder excluded from mounting
+Running this application requires Docker.
 
-## Running
+In a nutshell, installation steps are:
+* clone repository.
+* install dependencies 
+~~~ shell
+docker compose up composer_update
+~~~
+* `docker compose up`
 
-* Use docker-compose 
-* Access [http://localhost:5000/](http://localhost:5000/)
+### Linux caveats
 
+* Works with commands above. Depending on configuration might require `sudo`
 
-## // todo:
+### Windows caveats
 
-* ~~github~~
-* production: separate image targets
-* production: make cache-warmup with root user instead of having cache folder www-data writable.
-* entire deployment pipeline
-* production: not depend on .env file
-* install phpunit-speedtrap
-* figure out a way for easy composer commands since no longer mounting /vendor folder
+Performance on Windows systems will be very slow unless repository resides inside a WSL image.
+* Install Ubuntu from the Microsoft store
+* Write `\\wsl.localhost\` in the explorer address bar to access wsl filesystem.
+* Navigate to the Ubuntu filesystem
+* clone there
+* Configure Docker to use WSL2
+* Configure Docker to access the Ubuntu image
+
+![wsl integration](docs/docker_settings_wsl_integration.png)
+
+You probably want to use your current GIT installation rather than the one that comes with Ubuntu.
+Make sure to configure your IDE to use your default git on windows, perhaps `C:\Program Files\Git\bin\`
+
+Git might complain about repository ownership. To soothe its worries run this on the host machine, not the container:
+
+~~~ shell
+git config --global --add safe.directory '%(prefix)///wsl.localhost/Ubuntu-22.04/PATH_TO_REPOSITORY'
+git config --global --add safe.directory '%(prefix)///wsl$/Ubuntu-22.04/PATH_TO_REPOSITORY'
+~~~
+
+Or
+
+~~~ shell
+git config --global --add safe.directory '*'
+~~~
+
+Or just configure git on the Ubuntu machine: keys, gpg, GitHub, etc...
+
+External: [Docker desktop wsl2 best practices🗗](https://www.docker.com/blog/docker-desktop-wsl-2-best-practices/)
