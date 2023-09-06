@@ -46,4 +46,4 @@ git config --global --add safe.directory '*'
 
 Or just configure git on the Ubuntu machine: keys, gpg, GitHub, etc...
 
-External: [Docker desktop wsl2 best practices🗗](https://www.docker.com/blog/docker-desktop-wsl-2-best-practices/)
+External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docker-desktop-wsl-2-best-practices/)
