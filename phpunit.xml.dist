@@ -2,7 +2,6 @@
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd"
-         backupGlobals="false"
          colors="true"
          bootstrap="tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
@@ -23,7 +22,7 @@
   <coverage/>
   <source>
     <include>
-      <directory suffix=".php">src</directory>
+      <directory>src</directory>
     </include>
   </source>
 </phpunit>

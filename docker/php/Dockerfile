@@ -1,4 +1,4 @@
-FROM php:8.1.1-fpm
+FROM php:8.2-fpm
 RUN mkdir /var/www/data && mkdir /var/www/data/logs && mkdir /var/www/data/cache && chown -R www-data:www-data /var/www/data
 
 RUN pecl install redis-5.3.7 \

@@ -4,6 +4,10 @@ namespace App\Domain;
 
 use App\Domain\Exception\UserDoesNotHostParty;
 
+/**
+ * Class responsibility: Orchestrates with PartyStorage class in a way that is indicative of
+ * the current user role restrictions
+ */
 class ApplicationUser
 {
     private string $firstName;
