@@ -8,6 +8,9 @@ class Party
 
     public readonly GUID $id;
 
+    /** @var YoutubeSong[] */
+    private array $songs;
+
     public function __construct(GUID $id, ApplicationUser $host)
     {
         $this->host = $host;
@@ -24,5 +27,21 @@ class Party
         return $this->id;
     }
 
+    public function enqueueSong(YoutubeSong $song): void
+    {
+        $this->songs[] = $song;
+    }
 
+    /** @return YoutubeSong[] */
+    public function listSongs(): array
+    {
+        return $this->songs;
+    }
+
+    public function deleteSong(YoutubeSong $song)
+    {
+        $songId = array_search($song, $this->songs);
+        if ($songId === false) throw new Exception\SongDoesNotExist();
+        unset($this->songs[$songId]);
+    }
 }

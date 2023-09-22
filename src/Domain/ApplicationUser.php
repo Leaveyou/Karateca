@@ -3,6 +3,7 @@
 namespace App\Domain;
 
 use App\Domain\Exception\UserDoesNotHostParty;
+use App\Domain\Exception\UserDoesNotOwnSong;
 
 /**
  * Class responsibility: Orchestrates with PartyStorage class in a way that is indicative of
@@ -40,5 +41,20 @@ class ApplicationUser
         $party = new Party(GUID::generate(), $this);
         $this->partyStorage->addParty($party);
         return $party;
+    }
+
+    public function enqueueSong(GUID $partyId, YoutubeSong $song): void
+    {
+        $party = $this->partyStorage->getParty($partyId);
+        $party->enqueueSong($song);
+    }
+
+    public function deleteSong(GUID $partyId, YoutubeSong $song): void
+    {
+        $party = $this->partyStorage->getParty($partyId);
+        if (!in_array($this, [$party->getHost(), $song->getSinger()], true)) {
+            throw new UserDoesNotOwnSong("Cannot delete song. It belongs to someone else.");
+        }
+        $party->deleteSong($song);
     }
 }
