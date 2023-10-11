@@ -52,4 +52,74 @@ External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docke
 
 * [x] Delete song
 * [ ] Reorder playlist - need string keys for array_splice to preserve indices. Will reorder by splicing: move(fromPosition, toPosition)
-* [ ] 
+* [ ] Make GUID string. No need to keep it as class sine it hs no methods. only method needed is creation method.
+* [ ] Fix problem: many functions accept GUID as parameter. but GUIDs are for both songs and parties. Need more restriction OR maybe treat incorrect GUID as invalid / inexistent GUID
+### Thoughts on using guids or positional arguments for reordering
+
+I think redis storage should have separatelist for history and future planned songs:
+* shows accurate history of what's been played
+* solves problem of knowing currently playing song
+* makes list of current songs smaller speeding up sorting songs
+* perhaps currently playing song might be at  end of playlist to prevent changes to it such as deleting it, OR first in new list to allow deleting, thus skipping it.
+
+~~~ mermaid
+---
+title: Class Diagram
+---
+classDiagram
+
+    ApplicationUser --|> PartyStorage: uses
+    ApplicationUser --|> Party: uses
+    
+    RuntimePartyStorage ..|> PartyStorage: implements
+    RedisPartyStorage ..|> PartyStorage: implements
+    
+    ApplicationUser ..|> Host: implements
+    Party "1" o-- "0..*" YoutubeSong
+    
+    Party --|> Host: has
+    
+    PartyStorage "1" *-- "0..*" Party: contains
+    
+    namespace Infrastructure {
+        class RuntimePartyStorage
+        class RedisPartyStorage
+    
+        class ApplicationUser {
+            throwParty()
+            deleteParty()
+            listParties()
+            enqueueSong()
+            deleteSong()
+            listSongs()
+        }
+    }
+    
+    namespace domain {
+        class Host {
+            <<interface>> 
+        }
+        class Party {
+            host: Host
+            guid: 
+            addSong(): void
+            deleteSong(): void
+            moveSong(): void
+        }
+        class YoutubeSong {
+            guid
+        }
+        class PartyStorage {
+            <<interface>> 
+            playlists: Party[]
+            addParty() : void
+            deleteParty(): void
+            getParty(): Party
+            listParties(): Party[]
+            storeParty() : void
+        } 
+    }
+    
+    note for PartyStorage "Does the storage\nvia storeParty()\nOR via each action"
+
+~~~

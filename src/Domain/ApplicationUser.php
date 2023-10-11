@@ -9,7 +9,7 @@ use App\Domain\Exception\UserDoesNotOwnSong;
  * Class responsibility: Orchestrates with PartyStorage class in a way that is indicative of
  * the current user role restrictions
  */
-class ApplicationUser
+class ApplicationUser implements Host
 {
     private string $firstName;
     private string $lastName;
@@ -56,5 +56,14 @@ class ApplicationUser
             throw new UserDoesNotOwnSong("Cannot delete song. It belongs to someone else.");
         }
         $party->deleteSong($song);
+    }
+
+    public function moveSong(GUID $partyId, GUID $songId, ?GUID $moveBeforeId): void
+    {
+        $party = $this->partyStorage->getParty($partyId);
+        if ($party->getHost() !== $this) {
+            throw new UserDoesNotHostParty("Cannot reorder songs. You do not host the party.");
+        }
+        $party->moveSong($songId, $moveBeforeId);
     }
 }

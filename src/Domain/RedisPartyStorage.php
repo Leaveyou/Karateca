@@ -2,6 +2,7 @@
 
 namespace App\Domain;
 
+use App\Domain\PartyStorage;
 use Redis;
 
 class RedisPartyStorage implements PartyStorage
@@ -62,4 +63,5 @@ class RedisPartyStorage implements PartyStorage
     {
         return "PARTY-SETTINGS_" . $partyId;
     }
+
 }

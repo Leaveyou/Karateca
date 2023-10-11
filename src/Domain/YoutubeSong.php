@@ -2,23 +2,25 @@
 
 namespace App\Domain;
 
+use App\Domain\Party;
+
 class YoutubeSong
 {
     private ApplicationUser $singer;
-    private string $youtubeId;
+    public readonly string $youtubeId;
 
-    /**
-     * @param ApplicationUser $singer
-     * @param string $youtubeId
-     */
-    public function __construct(ApplicationUser $singer, string $youtubeId)
+    public readonly GUID|string $guid;
+
+    public function __construct(ApplicationUser $singer, string $youtubeId, GUID $guid)
     {
         $this->singer = $singer;
         $this->youtubeId = $youtubeId;
+        $this->guid = $guid;
     }
 
     public function getSinger(): ApplicationUser
     {
         return $this->singer;
     }
+
 }
