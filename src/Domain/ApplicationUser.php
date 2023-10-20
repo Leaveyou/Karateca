@@ -15,10 +15,12 @@ class ApplicationUser implements Host
     private string $lastName;
     private string $nickname;
     private PartyStorage $partyStorage;
+    private GUID $id;
 
-    public function __construct(PartyStorage $partyStorage)
+    public function __construct(PartyStorage $partyStorage, GUID $id)
     {
         $this->partyStorage = $partyStorage;
+        $this->id = $id;
     }
 
     public function deleteParty(GUID $partyId): void
@@ -65,5 +67,10 @@ class ApplicationUser implements Host
             throw new UserDoesNotHostParty("Cannot reorder songs. You do not host the party.");
         }
         $party->moveSong($songId, $moveBeforeId);
+    }
+
+    public function getId(): GUID
+    {
+        return $this->id;
     }
 }

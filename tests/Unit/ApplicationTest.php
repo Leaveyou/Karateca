@@ -17,7 +17,7 @@ class ApplicationTest extends MockeryTestCase
     function testUsersGetEmptyListWhenNoParties()
     {
         $partyList = new RuntimePartyStorage();
-        $george = new ApplicationUser($partyList);
+        $george = new ApplicationUser($partyList, GUID::generate());
 
         $parties = $george->listParties();
         $this->assertEquals([], $parties, "The user should have gotten an empty list since there are no parties defined.");
@@ -26,7 +26,7 @@ class ApplicationTest extends MockeryTestCase
     function testUserCanCreateParty()
     {
         $partyCollection = new RuntimePartyStorage();
-        $george = new ApplicationUser($partyCollection);
+        $george = new ApplicationUser($partyCollection, GUID::generate());
 
         $additionResponse = $george->throwParty();
 
@@ -45,8 +45,8 @@ class ApplicationTest extends MockeryTestCase
     function testOnlyHostCanDeleteParty()
     {
         $partyCollection = new RuntimePartyStorage();
-        $george = new ApplicationUser($partyCollection);
-        $deanna = new ApplicationUser($partyCollection);
+        $george = new ApplicationUser($partyCollection, GUID::generate());
+        $deanna = new ApplicationUser($partyCollection, GUID::generate());
 
         $partyOfGeorge = $george->throwParty();
         $partyOfDeanna = $deanna->throwParty();
@@ -72,8 +72,8 @@ class ApplicationTest extends MockeryTestCase
     function testUsersCanAddSongsToParty()
     {
         $partyCollection = new RuntimePartyStorage();
-        $george = new ApplicationUser($partyCollection);
-        $deanna = new ApplicationUser($partyCollection);
+        $george = new ApplicationUser($partyCollection, GUID::generate());
+        $deanna = new ApplicationUser($partyCollection, GUID::generate());
         $partyOfGeorge = $george->throwParty();
         $song = new YoutubeSong($deanna, "4DUGRWjdNLI", GUID::generate());
         $deanna->enqueueSong($partyOfGeorge->getId(), $song);
@@ -84,9 +84,9 @@ class ApplicationTest extends MockeryTestCase
     function testUsersCanDeleteOwnSongsFromParty()
     {
         $partyCollection = new RuntimePartyStorage();
-        $george = new ApplicationUser($partyCollection);
-        $deanna = new ApplicationUser($partyCollection);
-        $lucretia = new ApplicationUser($partyCollection);
+        $george = new ApplicationUser($partyCollection, GUID::generate());
+        $deanna = new ApplicationUser($partyCollection, GUID::generate());
+        $lucretia = new ApplicationUser($partyCollection, GUID::generate());
         $partyOfGeorge = $george->throwParty();
 
         $songOfDeanna = new YoutubeSong($deanna, "CCC", GUID::generate() );
@@ -111,9 +111,9 @@ class ApplicationTest extends MockeryTestCase
     function testPartyOwnerCanReorderSongs()
     {
         $partyCollection = new RuntimePartyStorage();
-        $george = new ApplicationUser($partyCollection);
-        $deanna = new ApplicationUser($partyCollection);
-        $lucretia = new ApplicationUser($partyCollection);
+        $george = new ApplicationUser($partyCollection, GUID::generate());
+        $deanna = new ApplicationUser($partyCollection, GUID::generate());
+        $lucretia = new ApplicationUser($partyCollection, GUID::generate());
 
         $partyOfGeorge = $george->throwParty();
 
@@ -156,9 +156,9 @@ class ApplicationTest extends MockeryTestCase
     function testNoOtherThanHostCanReorderSongs()
     {
         $partyCollection = new RuntimePartyStorage();
-        $george = new ApplicationUser($partyCollection);
-        $deanna = new ApplicationUser($partyCollection);
-        $lucretia = new ApplicationUser($partyCollection);
+        $george = new ApplicationUser($partyCollection, GUID::generate());
+        $deanna = new ApplicationUser($partyCollection, GUID::generate());
+        $lucretia = new ApplicationUser($partyCollection, GUID::generate());
 
         $partyOfGeorge = $george->throwParty();
 

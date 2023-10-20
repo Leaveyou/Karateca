@@ -26,7 +26,7 @@ class RedisPartyStorage implements PartyStorage
 
         $return = [];
         foreach ($response as $partyData) {
-            $host = new ApplicationUser($this);
+            $host = new ApplicationUser($this, new GUID($partyData['host']));
             $return[$partyData['id']] = new Party(new GUID($partyData['id']), $host);
         }
         return $return;
@@ -41,7 +41,7 @@ class RedisPartyStorage implements PartyStorage
             $this->redis->zAdd("PARTIES", time(), $partyId);
             $this->redis->hMSet($this->partySettingsIndexKey($partyId), [
                 "id" => $partyId,
-                "host" => $party->getHost(),
+                "host" => (string)$party->getHost()->getId(),
             ]);
         }
         $this->redis->exec();
@@ -51,7 +51,9 @@ class RedisPartyStorage implements PartyStorage
 
     public function getParty(GUID $partyId): Party
     {
-        // TODO: Implement getParty() method.
+        $keyId = $this->partySettingsIndexKey((string)$partyId);
+        $partyData = $this->redis->hMGet($keyId, ["id", "host"]);
+        return new Party(new GUID($partyData['id']), new ApplicationUser($this, new GUID($partyData['host'])));
     }
 
     public function deleteParty(GUID $partyId): void

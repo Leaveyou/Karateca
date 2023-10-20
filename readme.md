@@ -51,12 +51,15 @@ External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docke
 ## TODO:
 
 * [x] Delete song
-* [ ] Reorder playlist - need string keys for array_splice to preserve indices. Will reorder by splicing: move(fromPosition, toPosition)
+* [x] Reorder playlist - need string keys for array_splice to preserve indices. Will reorder by splicing: move(fromPosition, toPosition)
+* [ ] Make youtubeSong not know the singer and make separate class for PlaylistSong which contains it.
 * [ ] Make GUID string. No need to keep it as class sine it hs no methods. only method needed is creation method.
 * [ ] Fix problem: many functions accept GUID as parameter. but GUIDs are for both songs and parties. Need more restriction OR maybe treat incorrect GUID as invalid / inexistent GUID
+* [ ] Run functional tests on separate redis container to prevent accidental interference. Temporarily using separate redis db.
+
 ### Thoughts on using guids or positional arguments for reordering
 
-I think redis storage should have separatelist for history and future planned songs:
+I think redis storage should have separate list for history and future planned songs:
 * shows accurate history of what's been played
 * solves problem of knowing currently playing song
 * makes list of current songs smaller speeding up sorting songs
