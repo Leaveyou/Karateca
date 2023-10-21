@@ -53,8 +53,7 @@ External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docke
 * [x] Delete song
 * [x] Reorder playlist - need string keys for array_splice to preserve indices. Will reorder by splicing: move(fromPosition, toPosition)
 * [x] Make youtubeSong not know the singer and make separate class for PlaylistSong which contains it.
-* [ ] Make GUID string. No need to keep it as class sine it hs no methods. only method needed is creation method.
-* [ ] Fix problem: many functions accept GUID as parameter. but GUIDs are for both songs and parties. Need more restriction OR maybe treat incorrect GUID as invalid / inexistent GUID
+* [ ] Make GUID string OR use ds/Map extension to be able to arrayAccess objects as keys
 * [ ] Run functional tests on separate redis container to prevent accidental interference. Temporarily using separate redis db.
 
 ### Thoughts on using guids or positional arguments for reordering
