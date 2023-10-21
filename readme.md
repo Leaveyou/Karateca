@@ -51,11 +51,15 @@ External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docke
 ## TODO:
 
 * [x] Delete song
-* [x] Reorder playlist - need string keys for array_splice to preserve indices. Will reorder by splicing: move(fromPosition, toPosition)
-* [x] Make youtubeSong not know the singer and make separate class for PlaylistSong which contains it.
-* [ ] Investigate using ds/Sequence for storing playlistSongs. Breaks access by ID since requires int keys. Has native functions for inserting songs at specified index
-* [ ] Make GUID string OR use ds/Map extension to be able to arrayAccess objects as keys
-* [ ] Run functional tests on separate redis container to prevent accidental interference. Temporarily using separate redis db.
+* [x] Reorder playlist by splicing to preserve indices
+* [x] Make `YoutubeSong` not know the singer and make separate class for `PlaylistSong` which contains it.
+* [ ] Make GUIDs strings <br>
+      **_OR_** use `ds/Map` extension to be able to array-access objects as keys<br>
+      **_OR_** use `ds/Hashable`
+* [ ] Investigate using `ds/Sequence` for storing PlaylistSongs. <br>
+      Breaks access by ID since requires int keys. <br>
+      Has native functions for inserting songs at specified index
+* [ ] Run functional tests on separate redis container to prevent accidental interference.<br> Temporarily using separate redis db.
 
 
 ~~~ mermaid
