@@ -1,6 +1,6 @@
 services:
   webserver:
-    image: webserver:3
+    image: webserver:latest
     container_name: webserver.karateca
     build:
       context: ./docker/webserver
@@ -15,7 +15,7 @@ services:
 
   php:
     container_name: php.karateca
-    image: php_server:latest
+    image: php_server:11
     build:
       dockerfile: docker/php/Dockerfile
       context: .
@@ -44,25 +44,21 @@ services:
       - karateca-bridge
 
   composer_update:
-    volumes:
-      - ".:/var/www/html"
-    working_dir: "/var/www/html"
-    image: composer:latest
+    extends:
+      service: php
     container_name: composer.karateca
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     profiles:
       - scripts
-    command: "composer update --ignore-platform-reqs --no-scripts"
-    networks:
-      - karateca-bridge
+    command: "composer update"
 
   cache_clear:
-    extends: php
+    extends:
+      service: php
     command: "php bin/console cache:clear"
     container_name: symfony.cache_clear
     profiles:
       - scripts
+
 
 volumes:
   server_cache:

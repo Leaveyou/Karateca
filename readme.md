@@ -18,7 +18,7 @@ docker compose up composer_update
 
 ### Windows caveats
 
-Performance on Windows systems will be very slow unless repository resides inside a WSL image.
+Performance on Windows systems will be very slow unless the repository resides inside a WSL image.
 * Install Ubuntu from the Microsoft store
 * Write `\\wsl.localhost\` in the explorer address bar to access wsl filesystem.
 * Navigate to the Ubuntu filesystem
@@ -51,19 +51,20 @@ External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docke
 ## TODO:
 
 * [x] Delete song
-* [x] Reorder playlist - need string keys for array_splice to preserve indices. Will reorder by splicing: move(fromPosition, toPosition)
-* [x] Make youtubeSong not know the singer and make separate class for PlaylistSong which contains it.
-* [ ] Investigate using ds/Sequence for storing playlistSongs. Breaks access by ID since requires int keys. Has native functions for inserting songs at specified index
-* [ ] Make GUID string OR use ds/Map extension to be able to arrayAccess objects as keys
-* [ ] Run functional tests on separate redis container to prevent accidental interference. Temporarily using separate redis db.
-
-### Thoughts on using guids or positional arguments for reordering
-
-I think redis storage should have separate list for history and future planned songs:
-* shows accurate history of what's been played
-* solves problem of knowing currently playing song
-* makes list of current songs smaller speeding up sorting songs
-* perhaps currently playing song might be at end of playlist to prevent changes to it such as deleting it, OR first in new list to allow deleting, thus skipping it.
+* [x] Reorder playlist by splicing to preserve indices
+* [x] Make `YoutubeSong` not know the singer and make separate class for `PlaylistSong` which contains it.
+* [ ] Meta: gpg key
+* [ ] switch from redis to valkey-io/valkey
+* [ ] fix functional tests ide configuration file
+* [ ] fix git dubious ownership requiring trust repository
+* [ ] Make GUIDs strings <br>
+      **_OR_** use `ds/Map` extension to be able to array-access objects as keys<br>
+      **_OR_** use `ds/Hashable`
+* [ ] Investigate using `ds/Sequence` for storing PlaylistSongs. <br>
+      Breaks access by ID since requires int keys. <br>
+      Has native functions for inserting songs at specified index
+* [ ] Run functional tests on separate redis container to prevent accidental interference.<br> Temporarily using separate redis db.
+* [ ] `redis.karateca      | 10:C 09 Dec 2024 13:50:46.736 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.`
 
 ~~~ mermaid
 ---
@@ -78,7 +79,7 @@ classDiagram
     RedisPartyStorage ..|> PartyStorage: implements
     
     ApplicationUser ..|> Host: implements
-    Party "1" o-- "0..*" YoutubeSong
+    Party "1" o-- "0..*" PartySong
     
     Party --|> Host: has
     
@@ -89,12 +90,12 @@ classDiagram
         class RedisPartyStorage
     
         class ApplicationUser {
-            throwParty()
-            deleteParty()
-            listParties()
-            enqueueSong()
-            deleteSong()
-            listSongs()
+            throwParty(): Party
+            deleteParty(): void
+            listParties(): Party[]
+            enqueueSong(Party, YoutubeSong)
+            deleteSong(Party)
+            listSongs(Party)
         }
     }
     
@@ -104,13 +105,15 @@ classDiagram
         }
         class Party {
             host: Host
-            guid: 
-            addSong(): void
+            id: 
+            addSong(): PartySong
             deleteSong(): void
             moveSong(): void
         }
-        class YoutubeSong {
-            guid
+        class PartySong {
+            id
+            YoutubeSong
+            singer
         }
         class PartyStorage {
             <<interface>> 

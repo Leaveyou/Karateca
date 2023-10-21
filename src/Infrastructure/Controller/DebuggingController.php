@@ -33,7 +33,6 @@ class DebuggingController extends AbstractController
         return $this->redirectToRoute('homepage');
     }
 
-
     /**
      * @Route("/redis_clear_all", name="redis_clear_all" )
      */

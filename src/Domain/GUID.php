@@ -4,22 +4,25 @@ namespace App\Domain;
 
 use Stringable;
 
-class GUID implements Stringable
+readonly class GUID implements Stringable
 {
-    private readonly string $stringRepresentation;
 
-    public function __construct(string $stringRepresentation)
-    {
-        $this->stringRepresentation = $stringRepresentation;
-    }
+    public function __construct(
+        private string $stringRepresentation
+    ){}
 
     public static function generate(): self
     {
-        $randomString =
-            bin2hex(random_bytes(3)) . "-"
-            . bin2hex(random_bytes(3)) . "-"
-            . bin2hex(random_bytes(3));
+        $randomString = self::randomUID();
         return new self($randomString);
+    }
+
+    private static function randomUID(): string
+    {
+        $bytes = 5;
+        return bin2hex(random_bytes($bytes)) . "-"
+            . bin2hex(random_bytes($bytes)) . "-"
+            . bin2hex(random_bytes($bytes));
     }
 
     public function __toString(): string

@@ -40,7 +40,7 @@ class Party
 
     public function getSongByIndex(int $offset): PartySong
     {
-        return current(array_slice($this->songs, $offset, 1,));
+        return current(array_slice($this->songs, $offset, 1));
     }
 
     public function moveSong(GUID $songId, ?GUID $successor): void
