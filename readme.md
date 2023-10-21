@@ -86,12 +86,12 @@ classDiagram
         class RedisPartyStorage
     
         class ApplicationUser {
-            throwParty()
-            deleteParty()
-            listParties()
-            enqueueSong()
-            deleteSong()
-            listSongs()
+            throwParty(): Party
+            deleteParty(): void
+            listParties(): Party[]
+            enqueueSong(Party, YoutubeSong)
+            deleteSong(Party)
+            listSongs(Party)
         }
     }
     
@@ -102,7 +102,7 @@ classDiagram
         class Party {
             host: Host
             id: 
-            addSong(): void
+            addSong(): PartySong
             deleteSong(): void
             moveSong(): void
         }
