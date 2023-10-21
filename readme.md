@@ -57,13 +57,6 @@ External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docke
 * [ ] Make GUID string OR use ds/Map extension to be able to arrayAccess objects as keys
 * [ ] Run functional tests on separate redis container to prevent accidental interference. Temporarily using separate redis db.
 
-### Thoughts on using guids or positional arguments for reordering
-
-I think redis storage should have separate list for history and future planned songs:
-* shows accurate history of what's been played
-* solves problem of knowing currently playing song
-* makes list of current songs smaller speeding up sorting songs
-* perhaps currently playing song might be at end of playlist to prevent changes to it such as deleting it, OR first in new list to allow deleting, thus skipping it.
 
 ~~~ mermaid
 ---
@@ -78,7 +71,7 @@ classDiagram
     RedisPartyStorage ..|> PartyStorage: implements
     
     ApplicationUser ..|> Host: implements
-    Party "1" o-- "0..*" YoutubeSong
+    Party "1" o-- "0..*" PartySong
     
     Party --|> Host: has
     
@@ -104,13 +97,15 @@ classDiagram
         }
         class Party {
             host: Host
-            guid: 
+            id: 
             addSong(): void
             deleteSong(): void
             moveSong(): void
         }
-        class YoutubeSong {
-            guid
+        class PartySong {
+            id
+            YoutubeSong
+            singer
         }
         class PartyStorage {
             <<interface>> 
