@@ -6,21 +6,13 @@ use App\Domain\Party;
 
 class YoutubeSong
 {
-    private ApplicationUser $singer;
     public readonly string $youtubeId;
 
-    public readonly GUID|string $guid;
+    public readonly GUID|string $id;
 
-    public function __construct(ApplicationUser $singer, string $youtubeId, GUID $guid)
+    public function __construct(GUID $id, string $youtubeId)
     {
-        $this->singer = $singer;
         $this->youtubeId = $youtubeId;
-        $this->guid = $guid;
+        $this->id = $id;
     }
-
-    public function getSinger(): ApplicationUser
-    {
-        return $this->singer;
-    }
-
 }

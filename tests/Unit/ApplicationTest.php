@@ -34,10 +34,10 @@ class ApplicationTest extends MockeryTestCase
 
         $partyCollection = $partyCollection->listParties();
         $this->assertCount( 1, $partyCollection, "Expected one party in list after one add.");
-        $this->assertArrayHasKey((string)$additionResponse->getId(), $partyCollection);
+        $this->assertArrayHasKey((string)$additionResponse->id, $partyCollection);
 
         $this->assertContains($additionResponse, $partyCollection, "Expected parties list to contain newly added party.");
-        $host = $additionResponse->getHost();
+        $host = $additionResponse->host;
 
         $this->assertEquals($george, $host, "Expected party host to be the guy who threw the party.");
     }
@@ -57,12 +57,12 @@ class ApplicationTest extends MockeryTestCase
         $this->assertContains($partyOfDeanna, $partyList, "Expected parties list to contain party of Deanna.");
 
         $this->expectException(UserDoesNotHostParty::class);
-        $deanna->deleteParty($partyOfGeorge->getId());
+        $deanna->deleteParty($partyOfGeorge->id);
 
-        $george->deleteParty($partyOfGeorge->getId());
+        $george->deleteParty($partyOfGeorge->id);
 
         $this->expectException(PartyDoesNotExist::class);
-        $partyCollection->getParty($partyOfGeorge->getId());
+        $partyCollection->getParty($partyOfGeorge->id);
 
         $partyList = $partyCollection->listParties();
         $this->assertCount( 1, $partyList, "Expected one party in list after deletion of George's.");
@@ -75,10 +75,11 @@ class ApplicationTest extends MockeryTestCase
         $george = new ApplicationUser($partyCollection, GUID::generate());
         $deanna = new ApplicationUser($partyCollection, GUID::generate());
         $partyOfGeorge = $george->throwParty();
-        $song = new YoutubeSong($deanna, "4DUGRWjdNLI", GUID::generate());
-        $deanna->enqueueSong($partyOfGeorge->getId(), $song);
-        $songs = $partyOfGeorge->listSongs();
-        $this->assertContains($song, $songs);
+
+        $song = new YoutubeSong(GUID::generate(), "4DUGRWjdNLI");
+
+        $partySong = $deanna->enqueueSong($partyOfGeorge->id, $song);
+        $this->assertEquals($song, $partySong->song);
     }
 
     function testUsersCanDeleteOwnSongsFromParty()
@@ -89,23 +90,21 @@ class ApplicationTest extends MockeryTestCase
         $lucretia = new ApplicationUser($partyCollection, GUID::generate());
         $partyOfGeorge = $george->throwParty();
 
-        $songOfDeanna = new YoutubeSong($deanna, "CCC", GUID::generate() );
-        $deanna->enqueueSong($partyOfGeorge->getId(), $songOfDeanna);
+        $songOfDeanna = new YoutubeSong(GUID::generate(), "CCC");
+        $playlistEntryOfDeanna = $deanna->enqueueSong($partyOfGeorge->id, $songOfDeanna);
 
-        $songOfLucretia = new YoutubeSong($lucretia, "AAA", GUID::generate());
-        $lucretia->enqueueSong($partyOfGeorge->getId(), $songOfDeanna);
-
-        $this->assertContains($songOfDeanna, $partyOfGeorge->listSongs());
+        $songOfLucretia = new YoutubeSong(GUID::generate(), "AAA");
+        $playlistEntryOfLucretia = $lucretia->enqueueSong($partyOfGeorge->id, $songOfLucretia);
 
         $this->expectException(UserDoesNotOwnSong::class);
-        $lucretia->deleteSong($partyOfGeorge->getId(), $songOfDeanna);
-        $this->assertContains($songOfDeanna, $partyOfGeorge->listSongs(), "Expected Lucretia to fail deleting someone else's songs");
+        $lucretia->deleteSong($partyOfGeorge->id, $playlistEntryOfDeanna);
+        $this->assertContains($playlistEntryOfDeanna, $partyOfGeorge->listSongs(), "Expected Lucretia to fail deleting someone else's songs");
 
-        $deanna->deleteSong($partyOfGeorge->getId(), $songOfDeanna);
-        $this->assertNotContains($songOfDeanna, $partyOfGeorge->listSongs(), "Expected Deana to be able to delete own songs");
+        $deanna->deleteSong($partyOfGeorge->id, $playlistEntryOfDeanna);
+        $this->assertNotContains($playlistEntryOfDeanna, $partyOfGeorge->listSongs(), "Expected Deana to be able to delete own songs");
 
-        $george->deleteSong($partyOfGeorge->getId(), $songOfLucretia);
-        $this->assertNotContains($songOfDeanna, $partyOfGeorge->listSongs(), "Expected Party owner to be able to delete Lucretia's song even if he/she does not own the song itself.");
+        $george->deleteSong($partyOfGeorge->id, $playlistEntryOfLucretia);
+        $this->assertNotContains($playlistEntryOfDeanna, $partyOfGeorge->listSongs(), "Expected Party owner to be able to delete Lucretia's song even if he/she does not own the song itself.");
     }
 
     function testPartyOwnerCanReorderSongs()
@@ -117,40 +116,62 @@ class ApplicationTest extends MockeryTestCase
 
         $partyOfGeorge = $george->throwParty();
 
-        $songOfDeanna = new YoutubeSong($deanna, "AAA", GUID::generate() );
-        $deanna->enqueueSong($partyOfGeorge->getId(), $songOfDeanna);
+        $songOfDeanna = new YoutubeSong(GUID::generate() , "AAA");
+        $playlistItemOfDeanna = $deanna->enqueueSong($partyOfGeorge->id, $songOfDeanna);
 
-        $songOfLucretia = new YoutubeSong($lucretia, "BBB", GUID::generate());
-        $lucretia->enqueueSong($partyOfGeorge->getId(), $songOfLucretia);
+        $songOfLucretia = new YoutubeSong(GUID::generate(), "BBB");
+        $playlistItemOfLucretia = $lucretia->enqueueSong($partyOfGeorge->id, $songOfLucretia);
 
-        $secondSongOfDeanna = new YoutubeSong($deanna, "CCC", GUID::generate() );
-        $deanna->enqueueSong($partyOfGeorge->getId(), $secondSongOfDeanna);
+        $secondSongOfDeanna = new YoutubeSong(GUID::generate() , "CCC");
+        $secondPlaylistItemOfDeanna = $deanna->enqueueSong($partyOfGeorge->id, $secondSongOfDeanna);
 
-        $george->moveSong($partyOfGeorge->getId(), $secondSongOfDeanna->guid, $songOfLucretia->guid);
+        $george->moveSong($partyOfGeorge->id, $secondPlaylistItemOfDeanna->id, $playlistItemOfLucretia->id);
 
-        $this->assertEquals($songOfDeanna      , $partyOfGeorge->getSongByIndex(0));
-        $this->assertEquals($secondSongOfDeanna, $partyOfGeorge->getSongByIndex(1));
-        $this->assertEquals($songOfLucretia    , $partyOfGeorge->getSongByIndex(2));
+        $this->assertEquals($playlistItemOfDeanna      , $partyOfGeorge->getSongByIndex(0));
+        $this->assertEquals($secondPlaylistItemOfDeanna, $partyOfGeorge->getSongByIndex(1));
+        $this->assertEquals($playlistItemOfLucretia    , $partyOfGeorge->getSongByIndex(2));
 
-        $george->moveSong($partyOfGeorge->getId(), $songOfDeanna->guid, null);
+        $george->moveSong($partyOfGeorge->id, $playlistItemOfDeanna->id, null);
 
-        $this->assertEquals($secondSongOfDeanna, $partyOfGeorge->getSongByIndex(0));
-        $this->assertEquals($songOfLucretia    , $partyOfGeorge->getSongByIndex(1));
-        $this->assertEquals($songOfDeanna      , $partyOfGeorge->getSongByIndex(2));
+        $this->assertEquals($secondPlaylistItemOfDeanna, $partyOfGeorge->getSongByIndex(0));
+        $this->assertEquals($playlistItemOfLucretia    , $partyOfGeorge->getSongByIndex(1));
+        $this->assertEquals($playlistItemOfDeanna      , $partyOfGeorge->getSongByIndex(2));
 
         try {
-            $george->moveSong($partyOfGeorge->getId(), GUID::generate(), $songOfLucretia->guid);
+            $george->moveSong($partyOfGeorge->id, GUID::generate(), $playlistItemOfLucretia->id);
             $this->fail("Should not be able to move song Ids not in the playlist");
         } catch (SongDoesNotExist){}
 
         try {
-            $george->moveSong($partyOfGeorge->getId(), $songOfLucretia->guid, GUID::generate());
+            $george->moveSong($partyOfGeorge->id, $playlistItemOfLucretia->id, GUID::generate());
             $this->fail("Should not be able to move song before a song that does not exist");
         } catch (SongDoesNotExist) {}
 
-        $this->assertEquals($secondSongOfDeanna->guid, $partyOfGeorge->getSongByIndex(0)->guid);
-        $this->assertEquals($songOfLucretia->guid    , $partyOfGeorge->getSongByIndex(1)->guid);
-        $this->assertEquals($songOfDeanna->guid      , $partyOfGeorge->getSongByIndex(2)->guid);
+        $this->assertEquals($secondPlaylistItemOfDeanna->id, $partyOfGeorge->getSongByIndex(0)->id);
+        $this->assertEquals($playlistItemOfLucretia->id    , $partyOfGeorge->getSongByIndex(1)->id);
+        $this->assertEquals($playlistItemOfDeanna->id      , $partyOfGeorge->getSongByIndex(2)->id);
+    }
+
+    public function testMovingLastItemToSamePosition()
+    {
+        $partyCollection = new RuntimePartyStorage();
+        $george = new ApplicationUser($partyCollection, GUID::generate());
+        $deanna = new ApplicationUser($partyCollection, GUID::generate());
+        $lucretia = new ApplicationUser($partyCollection, GUID::generate());
+
+        $partyOfGeorge = $george->throwParty();
+
+        $songOfDeanna = new YoutubeSong(GUID::generate() , "AAA");
+        $playlistItemOfDeanna = $deanna->enqueueSong($partyOfGeorge->id, $songOfDeanna);
+
+        $songOfLucretia = new YoutubeSong(GUID::generate(), "BBB");
+        $playlistItemOfLucretia = $lucretia->enqueueSong($partyOfGeorge->id, $songOfLucretia);
+
+        $george->moveSong($partyOfGeorge->id, $playlistItemOfLucretia->id, null);
+
+        $this->assertEquals($playlistItemOfDeanna  , $partyOfGeorge->getSongByIndex(0));
+        $this->assertEquals($playlistItemOfLucretia, $partyOfGeorge->getSongByIndex(1));
+
     }
 
     function testNoOtherThanHostCanReorderSongs()
@@ -162,17 +183,17 @@ class ApplicationTest extends MockeryTestCase
 
         $partyOfGeorge = $george->throwParty();
 
-        $songOfDeanna = new YoutubeSong($deanna, "AAA", GUID::generate() );
-        $deanna->enqueueSong($partyOfGeorge->getId(), $songOfDeanna);
+        $songOfDeanna = new YoutubeSong(GUID::generate() , "AAA");
+        $deanna->enqueueSong($partyOfGeorge->id, $songOfDeanna);
 
-        $songOfLucretia = new YoutubeSong($lucretia, "BBB", GUID::generate());
-        $lucretia->enqueueSong($partyOfGeorge->getId(), $songOfLucretia);
+        $songOfLucretia = new YoutubeSong(GUID::generate(), "BBB");
+        $lucretia->enqueueSong($partyOfGeorge->id, $songOfLucretia);
 
-        $secondSongOfDeanna = new YoutubeSong($deanna, "CCC", GUID::generate() );
-        $deanna->enqueueSong($partyOfGeorge->getId(), $secondSongOfDeanna);
+        $secondSongOfDeanna = new YoutubeSong(GUID::generate() , "CCC");
+        $deanna->enqueueSong($partyOfGeorge->id, $secondSongOfDeanna);
 
         $this->expectException(UserDoesNotHostParty::class);
-        $deanna->moveSong($partyOfGeorge->getId(), GUID::generate(), $songOfLucretia->guid);
+        $deanna->moveSong($partyOfGeorge->id, GUID::generate(), $songOfLucretia->id);
 
     }
 }

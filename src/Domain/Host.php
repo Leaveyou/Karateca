@@ -4,5 +4,5 @@ namespace App\Domain;
 
 interface Host
 {
-    public function getId(): GUID;
+
 }

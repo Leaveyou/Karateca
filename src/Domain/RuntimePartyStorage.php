@@ -17,7 +17,7 @@ class RuntimePartyStorage implements PartyStorage
 
     public function addParty(Party $party): self
     {
-        $this->parties[(string)$party->getId()] = $party;
+        $this->parties[(string)$party->id] = $party;
         return $this;
     }
 

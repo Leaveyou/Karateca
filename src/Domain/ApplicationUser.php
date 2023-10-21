@@ -15,7 +15,7 @@ class ApplicationUser implements Host
     private string $lastName;
     private string $nickname;
     private PartyStorage $partyStorage;
-    private GUID $id;
+    public GUID $id;
 
     public function __construct(PartyStorage $partyStorage, GUID $id)
     {
@@ -26,7 +26,7 @@ class ApplicationUser implements Host
     public function deleteParty(GUID $partyId): void
     {
         $party = $this->partyStorage->getParty($partyId);
-        if ($party->getHost() !== $this) {
+        if ($party->host !== $this) {
             throw new UserDoesNotHostParty("Cannot delete party. It belongs to someone else.");
         }
         $this->partyStorage->deleteParty($partyId);
@@ -45,16 +45,18 @@ class ApplicationUser implements Host
         return $party;
     }
 
-    public function enqueueSong(GUID $partyId, YoutubeSong $song): void
+    public function enqueueSong(GUID $partyId, YoutubeSong $song): PartySong
     {
         $party = $this->partyStorage->getParty($partyId);
-        $party->enqueueSong($song);
+        $playlistItem = new PartySong(GUID::generate(), $song, $this);
+        $party->enqueueSong($playlistItem);
+        return $playlistItem;
     }
 
-    public function deleteSong(GUID $partyId, YoutubeSong $song): void
+    public function deleteSong(GUID $partyId, PartySong $song): void
     {
         $party = $this->partyStorage->getParty($partyId);
-        if (!in_array($this, [$party->getHost(), $song->getSinger()], true)) {
+        if (!in_array($this, [$party->host, $song->singer], true)) {
             throw new UserDoesNotOwnSong("Cannot delete song. It belongs to someone else.");
         }
         $party->deleteSong($song);
@@ -63,14 +65,9 @@ class ApplicationUser implements Host
     public function moveSong(GUID $partyId, GUID $songId, ?GUID $moveBeforeId): void
     {
         $party = $this->partyStorage->getParty($partyId);
-        if ($party->getHost() !== $this) {
+        if ($party->host !== $this) {
             throw new UserDoesNotHostParty("Cannot reorder songs. You do not host the party.");
         }
         $party->moveSong($songId, $moveBeforeId);
-    }
-
-    public function getId(): GUID
-    {
-        return $this->id;
     }
 }

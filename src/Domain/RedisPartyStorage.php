@@ -34,14 +34,14 @@ class RedisPartyStorage implements PartyStorage
 
     public function addParty(Party $party): PartyStorage
     {
-        $partyId = (string)$party->getId();
+        $partyId = (string)$party->id;
 
         $this->redis->multi(Redis::PIPELINE);
         {
             $this->redis->zAdd("PARTIES", time(), $partyId);
             $this->redis->hMSet($this->partySettingsIndexKey($partyId), [
                 "id" => $partyId,
-                "host" => (string)$party->getHost()->getId(),
+                "host" => (string)$party->host->id,
             ]);
         }
         $this->redis->exec();

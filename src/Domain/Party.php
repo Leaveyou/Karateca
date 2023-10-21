@@ -6,11 +6,11 @@ use App\Domain\Exception\SongDoesNotExist;
 
 class Party
 {
-    private Host $host;
+    public readonly Host $host;
 
     public readonly GUID $id;
 
-    /** @var YoutubeSong[] */
+    /** @var PartySong[] */
     private array $songs;
 
     public function __construct(GUID $id, Host $host)
@@ -19,35 +19,26 @@ class Party
         $this->id = $id;
     }
 
-    public function getHost(): Host
+
+    public function enqueueSong(PartySong $song): void
     {
-        return $this->host;
+        $this->songs[(string)$song->id] = $song;
     }
 
-    public function getId(): GUID
-    {
-        return $this->id;
-    }
-
-    public function enqueueSong(YoutubeSong $song): void
-    {
-        $this->songs[(string)$song->guid] = $song;
-    }
-
-    /** @return YoutubeSong[] */
+    /** @return PartySong[] */
     public function listSongs(): array
     {
         return $this->songs;
     }
 
-    public function deleteSong(YoutubeSong $song): void
+    public function deleteSong(PartySong $song): void
     {
         $songId = in_array($song, $this->songs);
         if ($songId === false) throw new Exception\SongDoesNotExist();
-        unset($this->songs[(string)$song->guid]);
+        unset($this->songs[(string)$song->id]);
     }
 
-    public function getSongByIndex(int $offset): YoutubeSong
+    public function getSongByIndex(int $offset): PartySong
     {
         return current(array_slice($this->songs, $offset, 1,));
     }
@@ -64,7 +55,7 @@ class Party
         $this->insertSong($song, $position);
     }
 
-    public function extractSong(GUID $songId): YoutubeSong
+    public function extractSong(GUID $songId): PartySong
     {
         if (!isset($this->songs[(string)$songId])) {
             throw new SongDoesNotExist("Cannot find song with the provided GUID.");
@@ -75,18 +66,24 @@ class Party
         return $song;
     }
 
-    private function insertSong(YoutubeSong $song, int|false $position): void
+    private function insertSong(PartySong $song, int|false $position): void
     {
         if ($position === false) {
             $position = count($this->songs);
         }
         $firstPart = array_slice($this->songs, 0, $position, true);
         $secondPart = array_slice($this->songs, $position, null, true);
-        $this->songs = array_merge($firstPart, [(string)$song->guid => $song], $secondPart);
+        $this->songs = array_merge($firstPart, [(string)$song->id => $song], $secondPart);
     }
 
     public function getPositionByKey(?GUID $moveBeforeId): string|int|false
     {
         return array_search((string)$moveBeforeId, array_keys($this->songs), true);
+    }
+
+    public function getSong(GUID $songId): PartySong
+    {
+        if (!isset($this->songs[(string)$songId])) throw new SongDoesNotExist("Song does not exist");
+        return $this->songs[(string)$songId];
     }
 }
