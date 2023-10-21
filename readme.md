@@ -53,6 +53,7 @@ External: [Docker desktop wsl2 best practices](https://www.docker.com/blog/docke
 * [x] Delete song
 * [x] Reorder playlist - need string keys for array_splice to preserve indices. Will reorder by splicing: move(fromPosition, toPosition)
 * [x] Make youtubeSong not know the singer and make separate class for PlaylistSong which contains it.
+* [ ] Investigate using ds/Sequence for storing playlistSongs. Breaks access by ID since requires int keys. Has native functions for inserting songs at specified index
 * [ ] Make GUID string OR use ds/Map extension to be able to arrayAccess objects as keys
 * [ ] Run functional tests on separate redis container to prevent accidental interference. Temporarily using separate redis db.
 
@@ -62,7 +63,7 @@ I think redis storage should have separate list for history and future planned s
 * shows accurate history of what's been played
 * solves problem of knowing currently playing song
 * makes list of current songs smaller speeding up sorting songs
-* perhaps currently playing song might be at  end of playlist to prevent changes to it such as deleting it, OR first in new list to allow deleting, thus skipping it.
+* perhaps currently playing song might be at end of playlist to prevent changes to it such as deleting it, OR first in new list to allow deleting, thus skipping it.
 
 ~~~ mermaid
 ---
